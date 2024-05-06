@@ -69,7 +69,7 @@ export const OrderManagementPage = () => {
         if (!res.ok) setError("ERROR!!!");
         const response = await res.json();
         const order: GetOrderType[] = response.map((item: any) => ({
-          id: response.id,
+          id: item.id,
           customerId: item.customerId,
           orderNumber: item.orderNumber,
           totalPrice: item.totalPrice,

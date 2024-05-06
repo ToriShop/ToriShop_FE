@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { GetOrderType } from "./OrderManagementPage";
 
 type GetOrderItemType = {
@@ -36,6 +36,7 @@ export const OrderUpdatePage = () => {
 
   const location = useLocation();
   const [order, setOrder] = useState(location.state);
+  const { id } = useParams();
 
   const [orderItems, setOrderItems] = useState<GetOrderItemType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,11 +54,6 @@ export const OrderUpdatePage = () => {
   };
 
   const updateOrder = async (order: GetOrderType) => {
-    // const deliveryStatusInput = document.getElementById(
-    //   "deliveryStatus"
-    // ) as HTMLInputElement;
-    // const deliveryStatus: string = deliveryStatusInput.value;
-
     try {
       let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
 
@@ -92,16 +88,13 @@ export const OrderUpdatePage = () => {
       try {
         let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
 
-        const res = await fetch(
-          `http://localhost:8080/orderItem/order/${order.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "AUTH-TOKEN": token,
-            },
-          }
-        );
+        const res = await fetch(`http://localhost:8080/orderItem/order/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "AUTH-TOKEN": token,
+          },
+        });
         if (!res.ok) setError("ERROR!!!");
         const response = await res.json();
         const orderItem: GetOrderItemType[] = response.map((item: any) => ({
@@ -119,7 +112,7 @@ export const OrderUpdatePage = () => {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [id]);
 
   return (
     <>
