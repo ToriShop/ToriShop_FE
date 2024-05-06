@@ -1,22 +1,24 @@
 import {ChangeEvent, FormEvent, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const Login = () => {
-    const [userId, setUserId]  = useState('');
+    const [userId, setUserId] = useState('');
     const [userPw, setUserPw] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const isAdmin: boolean = location.pathname.split("/")[1] === "admin";
 
-    const handleIdChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleIdChange = (e: FormEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
         setUserId(value);
     };
 
-    const handlePwChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handlePwChange = (e: FormEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
         setUserPw(value);
     };
 
-    const onLogIn = (e: FormEvent) => {
+    const onLogIn = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!userId) {
@@ -29,41 +31,70 @@ const Login = () => {
             return;
         }
 
-        (async function() {
-             try {
-                 const res = await fetch(`로그인 api`);
-                 /*
-                 userRole
-                 jwt => localStorage에 저장한다.
-                  */
-                 if(res.ok) {
-                     alert("로그인 성공했습니다.")
-                     // 로그인 로직 구현
-                     // userRole에 따라 어디로 리다이렉트할지 결정한다.
-                     navigate('/admin/order');
-                 }
-             } catch (err) {
-                 if (err instanceof Error) {
-                     alert(`에러가 발생했습니다. (${err}`);
-                 }
-             }
-         }
+        (async function () {
+                console.log(userId);
+                console.log(userPw);
+                try {
+                    const response = await fetch(
+                        'http://localhost:8080/user/login',
+                        {
+                            method: "post",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                username: userId,
+                                password: userPw,
+                                role: isAdmin ? "ADMIN" : "CUSTOMER"
+                            })
+                        });
+                    /*
+                    userRole
+                    jwt => localStorage에 저장한다.
+                     */
+                    if (response.ok) {
+                        alert("로그인 성공했습니다.");
+                        // 로그인 로직 구현
+                        // userRole에 따라 어디로 리다이렉트할지 결정한다.
+                        isAdmin ? navigate('/admin/order') : navigate('/customer/product');
+                    }
+                } catch (err) {
+                    if (err instanceof Error) {
+                        alert(`에러가 발생했습니다. (${err}`);
+                    }
+                }
+            }
         )();
     };
 
     return (
         <>
-            <div>
-                <h1>ToriShop</h1>
-                <form onSubmit={onLogIn}>
-                    <label>아이디</label>
-                    <input id="userId" value={userId} onChange={handleIdChange}/>
-                    <label>비밀번호</label>
-                    <input id="passwordId" value={userPw} onChange={handlePwChange}/>
+            <div className={"flex flex-col items-center w-full"}>
+                <div className={"font-bold text-3xl"}>ToriShop</div>
+                <form onSubmit={onLogIn} className={"p-20 m-10 w-full border-gray-200 border-2 rounded"}>
                     <div>
+                        <div className={"inline-flex w-24 font-semibold text-lg"}>아이디</div>
+                        <input id="userId"
+                               value={userId}
+                               onChange={handleIdChange}
+                               className={"w-1/2 p-1 m-2 border-gray-300 border-2 rounded"}/>
+                    </div>
+                    <div>
+                        <div className={"inline-flex w-24 font-semibold text-lg"}>비밀번호</div>
+                        <input id="passwordId"
+                               value={userPw}
+                               onChange={handlePwChange}
+                               className={"w-1/2 p-1 m-2 border-gray-300 border-2 rounded"}/>
+                    </div>
+                    <div className={"flex justify-center p-20"}>
                         <button
-                            type="submit">로그인</button>
-                        <button>회원가입</button>
+                            className="m-5 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+                            type="submit">로그인
+                        </button>
+                        {isAdmin ? null :
+                            <button onClick={() => navigate('/customer/signin')}
+                                    className="m-5 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+                            >회원가입</button>}
                     </div>
                 </form>
             </div>
