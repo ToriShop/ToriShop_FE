@@ -1,11 +1,13 @@
 import {ChangeEvent, FormEvent, useRef, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
+import {Session, User, useSession} from "../../../contexts/session-context";
 
 const Login = () => {
     const [userId, setUserId] = useState('');
     const [userPw, setUserPw] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
+    const {session, login, signOut} = useSession();
     const isAdmin: boolean = location.pathname.split("/")[1] === "admin";
 
     const handleIdChange = (e: FormEvent<HTMLInputElement>) => {
@@ -31,9 +33,8 @@ const Login = () => {
             return;
         }
 
+
         (async function () {
-                console.log(userId);
-                console.log(userPw);
                 try {
                     const response = await fetch(
                         'http://localhost:8080/user/login',
@@ -54,6 +55,16 @@ const Login = () => {
                      */
                     if (response.ok) {
                         alert("로그인 성공했습니다.");
+
+                        const json = await response.json();
+                        const customer: User = {
+                            username: userId,
+                            token: json["jwt"],
+                            role: json["userRole"],
+                        };
+
+                        login(customer);
+
                         // 로그인 로직 구현
                         // userRole에 따라 어디로 리다이렉트할지 결정한다.
                         isAdmin ? navigate('/admin/order') : navigate('/customer/product');
