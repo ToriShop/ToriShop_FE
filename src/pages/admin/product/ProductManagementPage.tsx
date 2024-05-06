@@ -67,8 +67,24 @@ const Product = ({ product, onDelete }: Props) => {
         <div>{product.description}</div>
         {/* <div>{product.createDate.toLocaleDateString()}</div>
         <div>{product.updateDate.toLocaleDateString()}</div> */}
-        <button onClick={() => goToUpdate(product)}>수정</button>
-        <button onClick={() => deleteProduct(product.id)}>삭제</button>
+        <button
+          style={{
+            borderColor: "grey",
+            borderWidth: "1px",
+          }}
+          onClick={() => goToUpdate(product)}
+        >
+          수정
+        </button>
+        <button
+          style={{
+            borderColor: "grey",
+            borderWidth: "1px",
+          }}
+          onClick={() => deleteProduct(product.id)}
+        >
+          삭제
+        </button>
       </div>
     </>
   );
@@ -117,7 +133,15 @@ export const ProductManagementPage = () => {
 
   return (
     <>
-      <button onClick={goToCreate}>상품 추가하기</button>
+      <button
+        style={{
+          borderColor: "grey",
+          borderWidth: "1px",
+        }}
+        onClick={goToCreate}
+      >
+        상품 추가하기
+      </button>
       <br />
       <br />
       <h4>PRODUCT LIST</h4>

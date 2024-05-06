@@ -100,6 +100,10 @@ export const ProductDetailPage = () => {
             {/* 수량 조정 */}
             <div>
               <button
+                style={{
+                  borderColor: "grey",
+                  borderWidth: "1px",
+                }}
                 onClick={() => {
                   decreaseQuantity(product.price);
                 }}
@@ -108,6 +112,10 @@ export const ProductDetailPage = () => {
               </button>
               <span> {quantity} </span>
               <button
+                style={{
+                  borderColor: "grey",
+                  borderWidth: "1px",
+                }}
                 onClick={() => {
                   increaseQuantity(product.price);
                 }}
@@ -124,13 +132,21 @@ export const ProductDetailPage = () => {
 
           <div>
             <button
-              style={{ margin: "10px" }}
+              style={{
+                borderColor: "grey",
+                borderWidth: "1px",
+                margin: "10px",
+              }}
               onClick={() => goToCart({ product, quantity, totalPrice })}
             >
               장바구니
             </button>
             <button
-              style={{ margin: "10px" }}
+              style={{
+                borderColor: "grey",
+                borderWidth: "1px",
+                margin: "10px",
+              }}
               onClick={() => goToCheckout({ product, quantity, totalPrice })}
             >
               구매하기

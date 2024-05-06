@@ -1,11 +1,23 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ProductType } from "../../public/common/Type";
+import { ChangeEvent, useState } from "react";
 
 export const ProductUpdatePage = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const product: ProductType = location.state;
+  const [product, setProduct] = useState(location.state);
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    const newValue = event.target.value;
+    setProduct((prevProduct: ProductType) => ({
+      ...prevProduct,
+      [field]: newValue,
+    }));
+  };
 
   const updateProduct = async (productId: number) => {
     const nameInput = document.getElementById("name") as HTMLInputElement;
@@ -62,31 +74,65 @@ export const ProductUpdatePage = () => {
 
       <div>
         <label>상품명</label>
-        <input type="text" id="name" value={product.name} required />
+        <input
+          type="text"
+          id="name"
+          value={product.name}
+          onChange={(e) => handleInputChange(e, "name")}
+          required
+        />
         <br />
         <label>가격</label>
-        <input type="text" id="price" value={product.price} required />
+        <input
+          type="text"
+          id="price"
+          value={product.price}
+          onChange={(e) => handleInputChange(e, "price")}
+          required
+        />
         <br />
         <label>재고</label>
-        <input type="text" id="stock" value={product.stock} required />
+        <input
+          type="text"
+          id="stock"
+          value={product.stock}
+          onChange={(e) => handleInputChange(e, "stock")}
+          required
+        />
         <br />
         <label>카테고리</label>
-        <input type="text" id="category" value={product.category} required />
+        <input
+          type="text"
+          id="category"
+          value={product.category}
+          onChange={(e) => handleInputChange(e, "category")}
+          required
+        />
         <br />
         <label>설명</label>
         <input
           type="text"
           id="description"
           value={product.description}
+          onChange={(e) => handleInputChange(e, "description")}
           required
         />
         <br />
         <label>이미지</label>
-        <input type="text" id="image" value={product.image} required />
+        <input
+          type="text"
+          id="image"
+          value={product.image}
+          onChange={(e) => handleInputChange(e, "image")}
+          required
+        />
         <br />
       </div>
-
       <button
+        style={{
+          borderColor: "grey",
+          borderWidth: "1px",
+        }}
         onClick={() => {
           updateProduct(product.id);
         }}

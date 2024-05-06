@@ -100,7 +100,11 @@ export const CheckoutPage = () => {
       <div>
         <button
           type="submit"
-          style={{ margin: "10px" }}
+          style={{
+            borderColor: "grey",
+            borderWidth: "1px",
+            margin: "10px",
+          }}
           onClick={() => makeOrder(orders)}
         >
           구매하기

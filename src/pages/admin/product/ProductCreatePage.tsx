@@ -75,6 +75,10 @@ export const ProductCreatePage = () => {
       </div>
 
       <button
+        style={{
+          borderColor: "grey",
+          borderWidth: "1px",
+        }}
         onClick={() => {
           createProduct();
         }}
