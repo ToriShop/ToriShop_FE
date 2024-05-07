@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useSession } from "../../../contexts/session-context";
 
 export const OrderPage = () => {
   const location = useLocation();
@@ -9,11 +10,17 @@ export const OrderPage = () => {
   const [error, setError] = useState("");
   const [orderNumber, setOrderNumber] = useState("null");
 
+  const { session } = useSession();
+
   useEffect(() => {
+    let token;
+    if (session.user) {
+      token = session.user.token;
+    } else {
+      token = "NO_TOKEN";
+    }
     (async function () {
       try {
-        let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
-
         const res = await fetch(`http://localhost:8080/order/${orderId}`, {
           method: "GET",
           headers: {
@@ -32,7 +39,7 @@ export const OrderPage = () => {
         setLoading(false);
       }
     })();
-  }, [orderId]);
+  }, [orderId, session.user]);
   return (
     <>
       {loading && <h1>Loading...</h1>}

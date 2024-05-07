@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ProductType } from "../../public/common/Type";
 import { useEffect, useState } from "react";
+import { useSession } from "../../../contexts/session-context";
 
 type Props = {
   product?: ProductType;
@@ -9,6 +10,7 @@ type Props = {
 
 const Product = ({ product, onDelete }: Props) => {
   const navigate = useNavigate();
+  const { session } = useSession();
 
   if (!product) return null;
 
@@ -17,30 +19,31 @@ const Product = ({ product, onDelete }: Props) => {
   };
 
   const deleteProduct = (id: number) => {
-    (async function () {
-      try {
-        let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
-
-        const res = await fetch(`http://localhost:8080/product/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "AUTH-TOKEN": token,
-          },
-        });
-        if (!res.ok) {
-          console.log("RESPONSE ERROR!!!");
-          return;
+    if (session.user) {
+      const { token } = session.user;
+      (async function () {
+        try {
+          const res = await fetch(`http://localhost:8080/product/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "AUTH-TOKEN": token,
+            },
+          });
+          if (!res.ok) {
+            console.log("RESPONSE ERROR!!!");
+            return;
+          }
+          alert("삭제되었습니다.");
+          onDelete(id);
+        } catch (err) {
+          if (err instanceof Error) {
+            if (err.name !== "AbortError") console.log("ERROR!!");
+          }
+          alert("삭제 실패");
         }
-        alert("삭제되었습니다.");
-        onDelete(id);
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.name !== "AbortError") console.log("ERROR!!");
-        }
-        alert("삭제 실패");
-      }
-    })();
+      })();
+    }
   };
 
   return (
@@ -80,6 +83,8 @@ export const ProductManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { session } = useSession();
+
   const handleDeleteProduct = (productId: number) => {
     setProducts((prevProducts) =>
       prevProducts.filter((product) => product.id !== productId)
@@ -87,32 +92,33 @@ export const ProductManagementPage = () => {
   };
 
   useEffect(() => {
-    (async function () {
-      try {
-        let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
-
-        const res = await fetch("http://localhost:8080/product", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "AUTH-TOKEN": token,
-          },
-        });
-        if (!res.ok) {
-          setError("ERROR!!!");
-        } else {
-          const product = await res.json();
-          setProducts(product);
+    if (session.user) {
+      const { token } = session.user;
+      (async function () {
+        try {
+          const res = await fetch("http://localhost:8080/product", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "AUTH-TOKEN": token,
+            },
+          });
+          if (!res.ok) {
+            setError("ERROR!!!");
+          } else {
+            const product = await res.json();
+            setProducts(product);
+          }
+        } catch (err) {
+          if (err instanceof Error && err.name !== "AbortError") {
+            setError("ERROR!!");
+          }
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        if (err instanceof Error && err.name !== "AbortError") {
-          setError("ERROR!!");
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+      })();
+    }
+  }, [session.user]);
 
   return (
     <div className="container mx-auto p-4">

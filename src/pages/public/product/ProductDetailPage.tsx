@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { OrderType, ProductType } from "../../public/common/Type";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSession } from "../../../contexts/session-context";
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
@@ -24,6 +25,8 @@ export const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
 
+  const { session } = useSession();
+
   // 수량 증가 함수
   const increaseQuantity = (price: number) => {
     setQuantity((prevQuantity) => {
@@ -46,10 +49,14 @@ export const ProductDetailPage = () => {
   };
 
   useEffect(() => {
+    let token;
+    if (session.user) {
+      token = session.user.token;
+    } else {
+      token = "NO_TOKEN";
+    }
     (async function () {
       try {
-        const token = localStorage.getItem("accessToken") || "NO_TOKEN";
-
         const res = await fetch(`http://localhost:8080/product/${id}`, {
           method: "GET",
           headers: {
@@ -73,7 +80,7 @@ export const ProductDetailPage = () => {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, session.user]);
 
   return (
     <div className="container mx-auto">
