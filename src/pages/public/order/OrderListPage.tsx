@@ -64,35 +64,32 @@ const OrderListPage = () => {
 
     return (
         <>
-            <div className="container mx-auto p-6">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
-                        <thead className="bg-gray-800 text-white">
-                        <tr>
-                            <th className="py-2 px-4 border-b border-gray-300">Order ID</th>
-                            <th className="py-2 px-4 border-b border-gray-300">Total Price</th>
-                            <th className="py-2 px-4 border-b border-gray-300">Recipient Name</th>
-                            <th className="py-2 px-4 border-b border-gray-300">Phone Number</th>
-                            <th className="py-2 px-4 border-b border-gray-300">Address</th>
-                            <th className="py-2 px-4 border-b border-gray-300">Delivery Status</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {orderList.map((order) => (
-                            <tr key={order.id} className="hover:bg-gray-100">
-                                <td className="py-2 px-4 border-b border-gray-300">{order.orderNumber}</td>
-                                <td className="py-2 px-4 border-b border-gray-300">{order.totalPrice.toLocaleString()} KRW</td>
-                                <td className="py-2 px-4 border-b border-gray-300">{order.recipientName}</td>
-                                <td className="py-2 px-4 border-b border-gray-300">{order.recipientPhone}</td>
-                                <td className="py-2 px-4 border-b border-gray-300">{order.recipientAddress}</td>
-                                <td className={`py-2 px-4 border-b border-gray-300 ${
-                                    order.deliveryStatus === "SHIPPED" ? "text-green-600" : "text-red-600"
-                                }`}>{order.deliveryStatus}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="container mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {orderList.map((order) => (
+                    <div
+                        key={order.id}
+                        className="bg-white shadow-md border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
+                        onClick={() => navigate(`/customer/order/${order.id}`)}
+                    >
+                        <h3 className="text-lg font-semibold mb-2">Order ID: {order.id}</h3>
+                        <div className="mb-2">
+                            <strong>Total Price:</strong> {order.totalPrice.toLocaleString()} KRW
+                        </div>
+                        <div className="mb-2">
+                            <strong>Recipient Name:</strong> {order.recipientName}
+                        </div>
+                        <div className="mb-2">
+                            <strong>Phone Number:</strong> {order.recipientPhone}
+                        </div>
+                        <div className="mb-2">
+                            <strong>Address:</strong> {order.recipientAddress}
+                        </div>
+                        <div
+                            className={`mb-2 ${order.deliveryStatus === "SHIPPED" ? "text-green-600" : "text-red-600"}`}>
+                            <strong>Delivery Status:</strong> {order.deliveryStatus}
+                        </div>
+                    </div>
+                ))}
             </div>
         </>
     );

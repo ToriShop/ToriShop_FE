@@ -19,6 +19,7 @@ import { OrderPage } from "./pages/public/order/OrderPage";
 import { OrderUpdatePage } from "./pages/admin/order/OrderUpdatePage";
 import SignInPage from "./pages/public/user/SignInPage";
 import OrderListPage from "./pages/public/order/OrderListPage";
+import OrderDetailPage from "./pages/public/order/OrderDetailPage";
 
 function App() {
     return (
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/customer" element={<HomePage />}>
                     <Route path='order'>
                         <Route index element={<OrderListPage/>}/>
+                        <Route path=':id' element={<OrderDetailPage/>}/>
                     </Route>
                     <Route path='signin' element={<SignInPage/>}/>
                     <Route path="user" element={<MyPage />} />
