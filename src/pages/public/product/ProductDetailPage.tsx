@@ -4,12 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export const ProductDetailPage = () => {
   const { id } = useParams();
-
   const navigate = useNavigate();
+
   const goToCart = ({ product, quantity, totalPrice }: OrderType) => {
     const order: OrderType = { product, quantity, totalPrice };
     navigate("/customer/cart", { state: order });
   };
+
   const goToCheckout = ({ product, quantity, totalPrice }: OrderType) => {
     const order: OrderType = { product, quantity, totalPrice };
     const orders: OrderType[] = [order];
@@ -22,33 +23,32 @@ export const ProductDetailPage = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
+
   // 수량 증가 함수
-  const increaseQuantity = (price: Number) => {
+  const increaseQuantity = (price: number) => {
     setQuantity((prevQuantity) => {
-      const newQuantity = prevQuantity + 1; // 수량 증가
-      setTotalPrice(newQuantity * +price); // 결제 금액 업데이트
+      const newQuantity = prevQuantity + 1;
+      setTotalPrice(newQuantity * price);
       return newQuantity;
     });
   };
 
   // 수량 감소 함수
-  const decreaseQuantity = (price: Number) => {
+  const decreaseQuantity = (price: number) => {
     setQuantity((prevQuantity) => {
       if (prevQuantity > 1) {
-        const newQuantity = prevQuantity - 1; // 수량 감소
-        setTotalPrice(newQuantity * +price); // 결제 금액 업데이트
+        const newQuantity = prevQuantity - 1;
+        setTotalPrice(newQuantity * price);
         return newQuantity;
       }
-      return prevQuantity; // 수량이 1보다 작아지지 않도록
+      return prevQuantity;
     });
   };
 
   useEffect(() => {
-    // const controller = new AbortController();
-    // const option = controller;
     (async function () {
       try {
-        let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
+        const token = localStorage.getItem("accessToken") || "NO_TOKEN";
 
         const res = await fetch(`http://localhost:8080/product/${id}`, {
           method: "GET",
@@ -57,13 +57,17 @@ export const ProductDetailPage = () => {
             "AUTH-TOKEN": token,
           },
         });
-        if (!res.ok) setError("ERROR!!!");
-        const product = await res.json();
-        setProduct(product);
-        setTotalPrice(product.price);
+
+        if (!res.ok) {
+          setError("ERROR!!!");
+        } else {
+          const product = await res.json();
+          setProduct(product);
+          setTotalPrice(product.price);
+        }
       } catch (err) {
-        if (err instanceof Error) {
-          if (err.name !== "AbortError") setError("ERROR!!");
+        if (err instanceof Error && err.name !== "AbortError") {
+          setError("ERROR!!");
         }
       } finally {
         setLoading(false);
@@ -72,81 +76,52 @@ export const ProductDetailPage = () => {
   }, [id]);
 
   return (
-    <>
-      <h4>PRODUCT LIST</h4>
-      {loading && <h1>Loading...</h1>}
-      {error && <h1>{error}</h1>}
+    <div className="container mx-auto">
+      <h4 className="text-lg font-bold mb-4">PRODUCT LIST</h4>
+      {loading && <h1 className="text-lg">Loading...</h1>}
+      {error && <h1 className="text-lg">{error}</h1>}
 
       {product && (
-        <div>
-          <div
-            className="product-item"
-            style={{
-              width: "300px",
-              borderColor: "grey",
-              borderWidth: "1px",
-            }}
-          >
+        <div className="border border-gray-300 rounded p-4">
+          <div className="mb-4">
             <img
               src={product.image}
               alt={product.name}
-              style={{ width: "200px", height: "200px" }}
+              className="w-52 h-52 object-cover rounded mb-4"
             />
-            <div>{product.name}</div>
-            <div>{product.price}원</div>
+            <div className="text-xl font-semibold mb-2">{product.name}</div>
+            <div className="text-lg font-bold">{product.price}원</div>
           </div>
 
-          <div>
-            {/* 수량 조정 */}
-            <div>
-              <button
-                style={{
-                  borderColor: "grey",
-                  borderWidth: "1px",
-                }}
-                onClick={() => {
-                  decreaseQuantity(product.price);
-                }}
-              >
-                -
-              </button>
-              <span> {quantity} </span>
-              <button
-                style={{
-                  borderColor: "grey",
-                  borderWidth: "1px",
-                }}
-                onClick={() => {
-                  increaseQuantity(product.price);
-                }}
-              >
-                +
-              </button>
-            </div>
-
-            {/* 결제 금액 표시 */}
-            <div>
-              <p>결제 금액: {totalPrice}원</p>
-            </div>
-          </div>
-
-          <div>
+          <div className="flex items-center mb-4">
             <button
-              style={{
-                borderColor: "grey",
-                borderWidth: "1px",
-                margin: "10px",
-              }}
+              className="border border-gray-300 px-2 py-1 rounded"
+              onClick={() => decreaseQuantity(product.price)}
+            >
+              -
+            </button>
+            <span className="mx-2">{quantity}</span>
+            <button
+              className="border border-gray-300 px-2 py-1 rounded"
+              onClick={() => increaseQuantity(product.price)}
+            >
+              +
+            </button>
+          </div>
+
+          <div className="mb-4">
+            <p className="text-lg">결제 금액: {totalPrice}원</p>
+          </div>
+
+          <div className="flex space-x-4">
+            <button
+              className="border border-gray-300 px-4 py-2 rounded"
               onClick={() => goToCart({ product, quantity, totalPrice })}
             >
               장바구니
             </button>
             <button
-              style={{
-                borderColor: "grey",
-                borderWidth: "1px",
-                margin: "10px",
-              }}
+              className="border border-gray-300 px-4 py-2 rounded"
               onClick={() => goToCheckout({ product, quantity, totalPrice })}
             >
               구매하기
@@ -154,6 +129,6 @@ export const ProductDetailPage = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
