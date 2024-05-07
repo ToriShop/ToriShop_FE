@@ -6,9 +6,7 @@ const Login = () => {
     const [userId, setUserId] = useState('');
     const [userPw, setUserPw] = useState('');
     const navigate = useNavigate();
-    const location = useLocation();
     const {session, login, signOut} = useSession();
-    const isAdmin: boolean = location.pathname.split("/")[1] === "admin";
 
     const handleIdChange = (e: FormEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
@@ -45,8 +43,7 @@ const Login = () => {
                             },
                             body: JSON.stringify({
                                 username: userId,
-                                password: userPw,
-                                role: isAdmin ? "ADMIN" : "CUSTOMER"
+                                password: userPw
                             })
                         });
                     /*
@@ -67,7 +64,7 @@ const Login = () => {
 
                         // 로그인 로직 구현
                         // userRole에 따라 어디로 리다이렉트할지 결정한다.
-                        isAdmin ? navigate('/admin/order') : navigate('/customer/product');
+                        json["userRole"] === "ADMIN" ? navigate('/admin/order') : navigate('/customer/product');
                     }
                 } catch (err) {
                     if (err instanceof Error) {
@@ -102,10 +99,9 @@ const Login = () => {
                             className="m-5 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
                             type="submit">로그인
                         </button>
-                        {isAdmin ? null :
-                            <button onClick={() => navigate('/customer/signin')}
-                                    className="m-5 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
-                            >회원가입</button>}
+                        <button onClick={() => navigate('/customer/signin')}
+                                className="m-5 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+                        >회원가입</button>
                     </div>
                 </form>
             </div>
