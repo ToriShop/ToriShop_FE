@@ -24,3 +24,10 @@ export type OrderItemType = {
   quantity: number;
   price: number;
 };
+
+//get orderItem용
+export type GetOrderItemType = {
+  productId: ProductType;
+  quantity: number;
+  price: number;
+};
