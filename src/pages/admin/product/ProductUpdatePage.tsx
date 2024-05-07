@@ -1,11 +1,14 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ProductType } from "../../public/common/Type";
 import { ChangeEvent, useState } from "react";
+import { useSession } from "../../../contexts/session-context";
 
 export const ProductUpdatePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [product, setProduct] = useState<ProductType>(location.state);
+
+  const { session } = useSession();
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -19,36 +22,35 @@ export const ProductUpdatePage = () => {
   };
 
   const updateProduct = async (productId: number) => {
-    try {
-      const token = localStorage.getItem("accessToken") || "NO_TOKEN";
-
-      const res = await fetch("http://localhost:8080/product", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "AUTH-TOKEN": token,
-        },
-        body: JSON.stringify({
-          id: productId,
-          name: product.name,
-          price: product.price,
-          stock: product.stock,
-          category: product.category,
-          description: product.description,
-          image: product.image,
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("HTTP error:", res.status, res.statusText);
-        return;
+    if (session.user) {
+      const { token } = session.user;
+      try {
+        const res = await fetch("http://localhost:8080/product", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "AUTH-TOKEN": token,
+          },
+          body: JSON.stringify({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            stock: product.stock,
+            category: product.category,
+            description: product.description,
+            image: product.image,
+          }),
+        });
+        if (!res.ok) {
+          console.error("HTTP error:", res.status, res.statusText);
+          return;
+        }
+        alert("수정되었습니다.");
+        navigate("/admin/product");
+      } catch (err) {
+        alert("수정 실패");
+        console.error(err);
       }
-
-      alert("수정되었습니다.");
-      navigate("/admin/product");
-    } catch (err) {
-      alert("수정 실패");
-      console.error(err);
     }
   };
 

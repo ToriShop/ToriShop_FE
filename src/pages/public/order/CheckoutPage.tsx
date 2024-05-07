@@ -1,9 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { OrderItemType, OrderType } from "../common/Type";
 import { useEffect, useState } from "react";
+import { useSession } from "../../../contexts/session-context";
 
 export const CheckoutPage = () => {
   const navigate = useNavigate();
+
+  const { session } = useSession();
 
   const makeOrder = async (orders: OrderType[]) => {
     const nameInput = document.getElementById("name") as HTMLInputElement;
@@ -22,9 +25,14 @@ export const CheckoutPage = () => {
       orderItems.push(orderItem);
     });
 
-    try {
-      let token: string = localStorage.getItem("accessToken") || "NO_TOKEN";
+    let token;
+    if (session.user) {
+      token = session.user.token;
+    } else {
+      token = "NO_TOKEN";
+    }
 
+    try {
       const res = await fetch("http://localhost:8080/order", {
         method: "POST",
         headers: {

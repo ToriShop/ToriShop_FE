@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useSession } from "../../../contexts/session-context";
 
 export const ProductCreatePage = () => {
   const navigate = useNavigate();
+  const { session } = useSession();
 
   const createProduct = async () => {
     const nameInput = document.getElementById("name") as HTMLInputElement;
@@ -25,35 +27,36 @@ export const ProductCreatePage = () => {
     const description: string = descriptionInput.value;
     const image: string = imageInput.value;
 
-    try {
-      const token = localStorage.getItem("accessToken") || "NO_TOKEN";
+    if (session.user) {
+      const { token } = session.user;
+      try {
+        const res = await fetch("http://localhost:8080/product", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "AUTH-TOKEN": token,
+          },
+          body: JSON.stringify({
+            name,
+            price,
+            stock,
+            category,
+            description,
+            image,
+          }),
+        });
 
-      const res = await fetch("http://localhost:8080/product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "AUTH-TOKEN": token,
-        },
-        body: JSON.stringify({
-          name,
-          price,
-          stock,
-          category,
-          description,
-          image,
-        }),
-      });
+        if (!res.ok) {
+          console.error("HTTP error:", res.status, res.statusText);
+          return;
+        }
 
-      if (!res.ok) {
-        console.error("HTTP error:", res.status, res.statusText);
-        return;
+        alert("생성되었습니다.");
+        navigate("/admin/product");
+      } catch (err) {
+        alert("생성 실패");
+        console.error(err);
       }
-
-      alert("생성되었습니다.");
-      navigate("/admin/product");
-    } catch (err) {
-      alert("생성 실패");
-      console.error(err);
     }
   };
 

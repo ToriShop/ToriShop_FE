@@ -1,12 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { GetOrderType } from "./OrderManagementPage";
 
-type GetOrderItemType = {
-  productName: string;
-  quantity: number;
-  price: number;
-};
+import { useSession } from "../../../contexts/session-context";
+import { GetOrderItemType, GetOrderType } from "../common/Type";
 
 type Props = { orderItem?: GetOrderItemType };
 
@@ -31,6 +27,8 @@ export const OrderUpdatePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { session } = useSession();
+
   const handleRadioChange = (
     event: ChangeEvent<HTMLInputElement>,
     field: string
@@ -43,70 +41,74 @@ export const OrderUpdatePage = () => {
   };
 
   const updateOrder = async (order: GetOrderType) => {
-    try {
-      let token = localStorage.getItem("accessToken") || "NO_TOKEN";
-
-      const res = await fetch("http://localhost:8080/order", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "AUTH-TOKEN": token,
-        },
-        body: JSON.stringify({
-          id: order.id,
-          recipientName: order.recipientName,
-          recipientPhone: order.recipientPhone,
-          recipientAddress: order.recipientAddress,
-          deliveryStatus: order.deliveryStatus,
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("HTTP error:", res.status, res.statusText);
-        return;
-      }
-
-      alert("수정되었습니다.");
-      navigate("/admin/order");
-    } catch (err) {
-      alert("수정 실패");
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    (async function () {
+    if (session.user) {
+      const { token } = session.user;
       try {
-        const token = localStorage.getItem("accessToken") || "NO_TOKEN";
-
-        const res = await fetch(`http://localhost:8080/orderItem/order/${id}`, {
-          method: "GET",
+        const res = await fetch("http://localhost:8080/order", {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             "AUTH-TOKEN": token,
           },
+          body: JSON.stringify({
+            id: order.id,
+            recipientName: order.recipientName,
+            recipientPhone: order.recipientPhone,
+            recipientAddress: order.recipientAddress,
+            deliveryStatus: order.deliveryStatus,
+          }),
         });
 
         if (!res.ok) {
-          setError("ERROR!");
-        } else {
-          const response = await res.json();
-          const orderItem: GetOrderItemType[] = response.map((item: any) => ({
-            productName: item.productId.name,
-            quantity: item.quantity,
-            price: item.price,
-          }));
-          setOrderItems(orderItem);
+          console.error("HTTP error:", res.status, res.statusText);
+          return;
         }
+        alert("수정되었습니다.");
+        navigate("/admin/order");
       } catch (err) {
-        if (err instanceof Error && err.name !== "AbortError") {
-          setError("ERROR!");
-        }
-      } finally {
-        setLoading(false);
+        alert("수정 실패");
+        console.error(err);
       }
-    })();
-  }, [id]);
+    }
+  };
+
+  useEffect(() => {
+    if (session.user) {
+      const { token } = session.user;
+      (async function () {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/orderItem/order/${id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "AUTH-TOKEN": token,
+              },
+            }
+          );
+
+          if (!res.ok) {
+            setError("ERROR!");
+          } else {
+            const response = await res.json();
+            const orderItem: GetOrderItemType[] = response.map((item: any) => ({
+              productName: item.productId.name,
+              quantity: item.quantity,
+              price: item.price,
+            }));
+            setOrderItems(orderItem);
+          }
+        } catch (err) {
+          if (err instanceof Error && err.name !== "AbortError") {
+            setError("ERROR!");
+          }
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [id, session.user]);
 
   return (
     <div className="container mx-auto p-4">
