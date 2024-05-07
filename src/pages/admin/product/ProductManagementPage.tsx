@@ -32,7 +32,7 @@ const Product = ({ product, onDelete }: Props) => {
           console.log("RESPONSE ERROR!!!");
           return;
         }
-        alert("삭제됐습니다.");
+        alert("삭제되었습니다.");
         onDelete(id);
       } catch (err) {
         if (err instanceof Error) {
@@ -44,49 +44,29 @@ const Product = ({ product, onDelete }: Props) => {
   };
 
   return (
-    <>
-      <div
-        className="product-item"
-        style={{
-          cursor: "pointer",
-          width: "150px",
-          borderColor: "grey",
-          borderWidth: "1px",
-          margin: "10px",
-        }}
-      >
-        <img
-          src={product.image}
-          alt={product.name}
-          style={{ width: "100px", height: "100px" }}
-        />
-        <div>{product.name}</div>
-        <div>{product.price}</div>
-        <div>{product.stock}</div>
-        <div>{product.category}</div>
-        <div>{product.description}</div>
-        {/* <div>{product.createDate.toLocaleDateString()}</div>
-        <div>{product.updateDate.toLocaleDateString()}</div> */}
+    <tr className="border hover:bg-gray-100">
+      <td className="p-2 border">{product.name}</td>
+      <td className="p-2 border">{product.price}</td>
+      <td className="p-2 border">{product.stock}</td>
+      <td className="p-2 border">{product.category}</td>
+      <td className="p-2 border">{product.description}</td>
+      {/* <td className="p-2 border">{product.createDate?.toLocaleDateString()}</td>
+      <td className="p-2 border">{product.updateDate?.toLocaleDateString()}</td> */}
+      <td className="p-2 border">
         <button
-          style={{
-            borderColor: "grey",
-            borderWidth: "1px",
-          }}
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded p-1"
           onClick={() => goToUpdate(product)}
         >
           수정
         </button>
         <button
-          style={{
-            borderColor: "grey",
-            borderWidth: "1px",
-          }}
+          className="bg-red-500 hover:bg-red-600 text-white rounded p-1 ml-2"
           onClick={() => deleteProduct(product.id)}
         >
           삭제
         </button>
-      </div>
-    </>
+      </td>
+    </tr>
   );
 };
 
@@ -118,12 +98,15 @@ export const ProductManagementPage = () => {
             "AUTH-TOKEN": token,
           },
         });
-        if (!res.ok) setError("ERROR!!!");
-        const product = await res.json();
-        setProducts(product);
+        if (!res.ok) {
+          setError("ERROR!!!");
+        } else {
+          const product = await res.json();
+          setProducts(product);
+        }
       } catch (err) {
-        if (err instanceof Error) {
-          if (err.name !== "AbortError") setError("ERROR!!");
+        if (err instanceof Error && err.name !== "AbortError") {
+          setError("ERROR!!");
         }
       } finally {
         setLoading(false);
@@ -132,27 +115,40 @@ export const ProductManagementPage = () => {
   }, []);
 
   return (
-    <>
+    <div className="container mx-auto p-4">
       <button
-        style={{
-          borderColor: "grey",
-          borderWidth: "1px",
-        }}
+        className="bg-green-500 hover:bg-green-600 text-white rounded p-2 mb-4"
         onClick={goToCreate}
       >
         상품 추가하기
       </button>
-      <br />
-      <br />
-      <h4>PRODUCT LIST</h4>
+
       {loading && <h1>Loading...</h1>}
       {error && <h1>{error}</h1>}
 
-      {products?.map((product) => (
-        <div key={product.id}>
-          <Product product={product} onDelete={handleDeleteProduct} />
-        </div>
-      ))}
-    </>
+      <h4 className="text-lg font-bold mb-2">PRODUCT LIST</h4>
+
+      <table className="w-full border text-left">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="p-2 border">이름</th>
+            <th className="p-2 border">가격</th>
+            <th className="p-2 border">재고</th>
+            <th className="p-2 border">카테고리</th>
+            <th className="p-2 border">설명</th>
+            <th className="p-2 border">동작</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <Product
+              key={product.id}
+              product={product}
+              onDelete={handleDeleteProduct}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
