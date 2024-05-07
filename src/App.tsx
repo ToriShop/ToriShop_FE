@@ -18,39 +18,43 @@ import { CheckoutPage } from "./pages/public/order/CheckoutPage";
 import { OrderPage } from "./pages/public/order/OrderPage";
 import { OrderUpdatePage } from "./pages/admin/order/OrderUpdatePage";
 import SignInPage from "./pages/public/user/SignInPage";
+import OrderListPage from "./pages/public/order/OrderListPage";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<AdminHomePage />}>
-          <Route path="user" element={<UserManagementPage />} />
-          <Route path="product">
-            <Route index element={<ProductManagementPage />} />
-            <Route path=":id" element={<ProductUpdatePage />} />
-            <Route path="create" element={<ProductCreatePage />} />
-          </Route>
-          <Route path="order">
-            <Route index element={<OrderManagementPage />} />
-            <Route path=":id" element={<OrderUpdatePage />} />
-          </Route>
-        </Route>
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin" element={<AdminHomePage />}>
+                    <Route path="user" element={<UserManagementPage />} />
+                    <Route path="product">
+                        <Route index element={<ProductManagementPage />} />
+                        <Route path=":id" element={<ProductUpdatePage />} />
+                        <Route path="create" element={<ProductCreatePage />} />
+                    </Route>
+                    <Route path="order">
+                        <Route index element={<OrderManagementPage />} />
+                        <Route path=":id" element={<OrderUpdatePage />} />
+                    </Route>
+                </Route>
 
-        <Route path="/customer" element={<HomePage />}>
-          <Route path='signin' element={<SignInPage/>}/>
-          <Route path="user" element={<MyPage />} />
-          <Route path="product">
-            <Route index element={<ProductListPage />} />
-            <Route path=":id" element={<ProductDetailPage />} />
-          </Route>
-          <Route path="cart" element={<CartPage />} />
-          <Route path="checkout" element={<CheckoutPage />} />
-          <Route path="order" element={<OrderPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+                <Route path="/customer" element={<HomePage />}>
+                    <Route path='order'>
+                        <Route index element={<OrderListPage/>}/>
+                    </Route>
+                    <Route path='signin' element={<SignInPage/>}/>
+                    <Route path="user" element={<MyPage />} />
+                    <Route path="product">
+                        <Route index element={<ProductListPage />} />
+                        <Route path=":id" element={<ProductDetailPage />} />
+                    </Route>
+                    <Route path="cart" element={<CartPage />} />
+                    <Route path="checkout" element={<CheckoutPage />} />
+                    <Route path="order" element={<OrderPage />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
