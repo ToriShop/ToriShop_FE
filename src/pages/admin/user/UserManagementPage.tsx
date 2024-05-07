@@ -1,26 +1,9 @@
 import { useEffect, useState } from "react";
+import { useSession } from "../../../contexts/session-context";
+import { AdminType, CustomerType } from "../common/Type";
 
-type AdminType = {
-  id: number;
-  username: string;
-  userRole: string;
-  adminId: number;
-  code: string;
-};
 type AdminProps = {
   admin?: AdminType;
-};
-type CustomerType = {
-  id: number;
-  username: string;
-  userRole: string;
-  customerId: number;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  totalOrderAmount: number;
-  tier: string;
-  joinDate: Date;
 };
 type CustomerProps = {
   customer?: CustomerType;
@@ -59,73 +42,76 @@ export const UserManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { session } = useSession();
+
   const handleOptionChange = (e: { target: { value: string } }) => {
     setIsAdmin(e.target.value === "admin");
   };
 
   useEffect(() => {
-    (async function () {
-      try {
-        const token = localStorage.getItem("accessToken") || "NO_TOKEN";
+    if (session.user) {
+      const { token } = session.user;
+      (async function () {
+        try {
+          // 관리자를 가져오는 요청
+          const adminRes = await fetch("http://localhost:8080/admin", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "AUTH-TOKEN": token,
+            },
+          });
 
-        // 관리자를 가져오는 fetch 요청
-        const adminRes = await fetch("http://localhost:8080/admin", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "AUTH-TOKEN": token,
-          },
-        });
+          if (!adminRes.ok) {
+            setError("ERROR!!!");
+          } else {
+            const response = await adminRes.json();
+            const admin = response.map((item: any) => ({
+              id: item.id,
+              username: item.username,
+              userRole: item.userRole,
+              adminId: item.admin.id,
+              code: item.admin.code,
+            }));
+            setAdmins(admin);
+          }
 
-        if (!adminRes.ok) {
-          setError("ERROR!!!");
-        } else {
-          const response = await adminRes.json();
-          const admin = response.map((item: any) => ({
-            id: item.id,
-            username: item.username,
-            userRole: item.userRole,
-            adminId: item.admin.id,
-            code: item.admin.code,
-          }));
-          setAdmins(admin);
+          // 고객을 가져오는 요청
+          const customerRes = await fetch("http://localhost:8080/customer", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "AUTH-TOKEN": token,
+            },
+          });
+
+          if (!customerRes.ok) {
+            setError("ERROR!!!");
+          } else {
+            const response = await customerRes.json();
+            const customer = response.map((item: any) => ({
+              id: item.id,
+              username: item.username,
+              userRole: item.userRole,
+              customerId: item.customer.id,
+              phoneNumber: item.customer.phoneNumber,
+              email: item.customer.email,
+              address: item.customer.address,
+              totalOrderAmount: item.customer.totalOrderAmount,
+              tier: item.customer.tier.tier,
+            }));
+            setCustomers(customer);
+          }
+        } catch (err) {
+          if (err instanceof Error && err.name !== "AbortError") {
+            setError("ERROR!!");
+          }
+        } finally {
+          setLoading(false);
         }
-
-        // 고객을 가져오는 fetch 요청
-        const customerRes = await fetch("http://localhost:8080/customer", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "AUTH-TOKEN": token,
-          },
-        });
-
-        if (!customerRes.ok) {
-          setError("ERROR!!!");
-        } else {
-          const response = await customerRes.json();
-          const customer = response.map((item: any) => ({
-            id: item.id,
-            username: item.username,
-            userRole: item.userRole,
-            customerId: item.customer.id,
-            phoneNumber: item.customer.phoneNumber,
-            email: item.customer.email,
-            address: item.customer.address,
-            totalOrderAmount: item.customer.totalOrderAmount,
-            tier: item.customer.tier.tier,
-          }));
-          setCustomers(customer);
-        }
-      } catch (err) {
-        if (err instanceof Error && err.name !== "AbortError") {
-          setError("ERROR!!");
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+      })();
+    }
+  }, [session.user]);
 
   return (
     <div className="container mx-auto p-4">

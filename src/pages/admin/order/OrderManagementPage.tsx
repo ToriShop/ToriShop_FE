@@ -1,17 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-export type GetOrderType = {
-  id: number;
-  customerId: number;
-  orderNumber: string;
-  totalPrice: number;
-  recipientName: string;
-  recipientPhone: string;
-  recipientAddress: string;
-  deliveryStatus: string;
-  orderDate: Date;
-};
+import { useSession } from "../../../contexts/session-context";
+import { GetOrderType } from "../common/Type";
 
 type Props = {
   order?: GetOrderType;
@@ -48,46 +38,48 @@ export const OrderManagementPage = () => {
   const [orders, setOrders] = useState<GetOrderType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { session } = useSession();
 
   useEffect(() => {
-    (async function () {
-      try {
-        let token = localStorage.getItem("accessToken") || "NO_TOKEN";
+    if (session.user) {
+      const { token } = session.user;
+      (async function () {
+        try {
+          const res = await fetch("http://localhost:8080/order", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "AUTH-TOKEN": token,
+            },
+          });
 
-        const res = await fetch("http://localhost:8080/order", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "AUTH-TOKEN": token,
-          },
-        });
-
-        if (!res.ok) {
-          setError("ERROR!!!");
-        } else {
-          const response = await res.json();
-          const order: GetOrderType[] = response.map((item: any) => ({
-            id: item.id,
-            customerId: item.customerId,
-            orderNumber: item.orderNumber,
-            totalPrice: item.totalPrice,
-            recipientName: item.recipientName,
-            recipientPhone: item.recipientPhone,
-            recipientAddress: item.recipientAddress,
-            deliveryStatus: item.deliveryStatus,
-            orderDate: item.orderDate,
-          }));
-          setOrders(order);
+          if (!res.ok) {
+            setError("ERROR!!!");
+          } else {
+            const response = await res.json();
+            const order: GetOrderType[] = response.map((item: any) => ({
+              id: item.id,
+              customerId: item.customerId,
+              orderNumber: item.orderNumber,
+              totalPrice: item.totalPrice,
+              recipientName: item.recipientName,
+              recipientPhone: item.recipientPhone,
+              recipientAddress: item.recipientAddress,
+              deliveryStatus: item.deliveryStatus,
+              orderDate: item.orderDate,
+            }));
+            setOrders(order);
+          }
+        } catch (err) {
+          if (err instanceof Error && err.name !== "AbortError") {
+            setError("ERROR!!");
+          }
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        if (err instanceof Error && err.name !== "AbortError") {
-          setError("ERROR!!");
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+      })();
+    }
+  }, [session.user]);
 
   return (
     <div className="container mx-auto p-4">

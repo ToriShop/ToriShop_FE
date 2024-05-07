@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProductType } from "../common/Type";
+import { useSession } from "../../../contexts/session-context";
 
 type Props = {
   product?: ProductType;
@@ -36,11 +37,17 @@ export const ProductListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const { session } = useSession();
+
   useEffect(() => {
+    let token;
+    if (session.user) {
+      token = session.user.token;
+    } else {
+      token = "NO_TOKEN";
+    }
     (async function () {
       try {
-        const token = localStorage.getItem("accessToken") || "NO_TOKEN";
-
         const res = await fetch("http://localhost:8080/product", {
           method: "GET",
           headers: {
@@ -62,7 +69,7 @@ export const ProductListPage = () => {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [session.user]);
 
   return (
     <div className="container mx-auto">
