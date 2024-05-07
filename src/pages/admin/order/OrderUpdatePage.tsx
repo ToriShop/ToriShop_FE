@@ -3,8 +3,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { GetOrderType } from "./OrderManagementPage";
 
 type GetOrderItemType = {
-  orderId: number;
-  productId: number;
+  productName: string;
   quantity: number;
   price: number;
 };
@@ -23,7 +22,7 @@ const OrderItem = ({ orderItem }: Props) => {
           margin: "10px",
         }}
       >
-        <div>{orderItem.productId}</div>
+        <div>{orderItem.productName}</div>
         <div>{orderItem.quantity}</div>
         <div>{orderItem.price}</div>
       </div>
@@ -98,8 +97,7 @@ export const OrderUpdatePage = () => {
         if (!res.ok) setError("ERROR!!!");
         const response = await res.json();
         const orderItem: GetOrderItemType[] = response.map((item: any) => ({
-          orderId: item.orderId,
-          productId: item.productId,
+          productName: item.productId.name,
           quantity: item.quantity,
           price: item.price,
         }));
@@ -130,8 +128,9 @@ export const OrderUpdatePage = () => {
         {loading && <h1>Loading...</h1>}
         {error && <h1>{error}</h1>}
 
+        <h3>{order.orderNumber}</h3>
         {orderItems?.map((orderItem) => (
-          <div key={orderItem.orderId}>
+          <div key={orderItem.productName}>
             <OrderItem orderItem={orderItem} />
           </div>
         ))}
