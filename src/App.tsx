@@ -11,12 +11,13 @@ import HomePage from "./pages/public/HomePage";
 import MyPage from "./pages/public/user/MyPage";
 import { ProductListPage } from "./pages/public/product/ProductListPage";
 import { ProductDetailPage } from "./pages/public/product/ProductDetailPage";
+import { ProductUpdatePage } from "./pages/admin/product/ProductUpdatePage";
+import { ProductCreatePage } from "./pages/admin/product/ProductCreatePage";
 import { CartPage } from "./pages/public/cart/CartPage";
 import { CheckoutPage } from "./pages/public/order/CheckoutPage";
 import { OrderPage } from "./pages/public/order/OrderPage";
-import { ProductUpdatePage } from "./pages/admin/product/ProductUpdatePage";
-import { ProductCreatePage } from "./pages/admin/product/ProductCreatePage";
 import { OrderUpdatePage } from "./pages/admin/order/OrderUpdatePage";
+import SignInPage from "./pages/public/user/SignInPage";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         </Route>
 
         <Route path="/customer" element={<HomePage />}>
+          <Route path='signin' element={<SignInPage/>}/>
           <Route path="user" element={<MyPage />} />
           <Route path="product">
             <Route index element={<ProductListPage />} />
