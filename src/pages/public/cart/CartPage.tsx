@@ -18,26 +18,18 @@ export const CartPage = () => {
             navigate("/customer/login");
         } else {
             setCartList(session.cart);
-            const price = session.cart.filter(item => (item.isInOrder))
+            const price = session.cart
+                .filter(item => item.isInOrder)
                 .reduce((accumulator, object) => {
                     return accumulator + object.price * object.quantity;
                 }, 0);
-
             setTotalPrice(price);
         }
     }, [navigate, session]);
 
-    const calculateTotalPrice = (cartList: Cart[]) => {
-        const price = cartList
-            .filter(item => item.isInOrder)
-            .reduce((accumulator, object) => {
-                return accumulator + object.price * object.quantity;
-            }, 0);
-        setTotalPrice(price);
-    };
-    // 구매하기
     const purchaseItems = () => {
-
+        navigate('/customer/pay');
+        return
     }
 
     return (
@@ -46,7 +38,8 @@ export const CartPage = () => {
                 <h1 className="text-2xl font-bold mb-5">장바구니</h1>
                 <div className="flex justify-between mb-5">
                     <h2 className="text-xl font-semibold">상품 목록</h2>
-                    <button className="bg-blue-500 text-white px-3 py-2 rounded">구매하기</button>
+                    <button className="bg-blue-500 text-white px-3 py-2 rounded"
+                    onClick={purchaseItems}>구매하기</button>
                 </div>
                 <ul id="cart" className="space-y-5">
                     {cartList.map((cart) => (
@@ -60,7 +53,7 @@ export const CartPage = () => {
 };
 
 export const CartOne = ({cart: cart}: Props) => {
-    const {session, removeItem, plusQuantity, minusQuantity, isInOrder} = useSession();
+    const {removeItem, plusQuantity, minusQuantity, isInOrder} = useSession();
 
     const increaseQuantity = (id: number) => {
         plusQuantity(id);

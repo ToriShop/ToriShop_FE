@@ -20,6 +20,7 @@ import {OrderUpdatePage} from "./pages/admin/order/OrderUpdatePage";
 import SignInPage from "./pages/public/user/SignInPage";
 import OrderListPage from "./pages/public/order/OrderListPage";
 import OrderDetailPage from "./pages/public/order/OrderDetailPage";
+import PaymentPage from "./pages/public/order/PaymentPage";
 
 function App() {
     return (
@@ -43,6 +44,9 @@ function App() {
                     <Route path='order'>
                         <Route index element={<OrderListPage/>}/>
                         <Route path=':id' element={<OrderDetailPage/>}/>
+                    </Route>
+                    <Route path='pay'>
+                        <Route index element={<PaymentPage/>}/>
                     </Route>
                     <Route path='signin' element={<SignInPage/>}/>
                     <Route path="user" element={<MyPage/>}/>
