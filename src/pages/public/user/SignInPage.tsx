@@ -1,4 +1,5 @@
 import {ChangeEventHandler, FormEvent, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 interface CustomerInfo {
     username: string;
@@ -14,6 +15,7 @@ const SignInPage = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
     const [address, setAddress] = useState("");
+    const navigate = useNavigate();
 
     const handleChangeUsername = (event: FormEvent<HTMLInputElement>) => {
         setUsername(event.currentTarget.value);
@@ -61,6 +63,7 @@ const SignInPage = () => {
 
                 if (response.ok) {
                     alert("회원가입이 완료되었습니다.");
+                    navigate("/login");
                 } else {
                     alert("회원가입 실패했습니다.");
                 }

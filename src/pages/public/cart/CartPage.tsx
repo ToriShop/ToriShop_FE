@@ -39,13 +39,17 @@ export const CartPage = () => {
                 <div className="flex justify-between mb-5">
                     <h2 className="text-xl font-semibold">상품 목록</h2>
                     <button className="bg-blue-500 text-white px-3 py-2 rounded"
-                    onClick={purchaseItems}>구매하기</button>
+                            onClick={purchaseItems}>구매하기
+                    </button>
                 </div>
-                <ul id="cart" className="space-y-5">
-                    {cartList.map((cart) => (
-                        <CartOne cart={cart} key={cart.productId}/>
-                    ))}
-                </ul>
+                {cartList.length == 0 ?
+                    <h5 className="font-bold mb-5">장바구니가 비었습니다.</h5>
+                    : <ul id="cart" className="space-y-5">
+                        {cartList.map((cart) => (
+                            <CartOne cart={cart} key={cart.productId}/>
+                        ))}
+                    </ul>
+                }
                 <h5 className="text-2xl font-bold mb-5">총 가격: {totalPrice}</h5>
             </div>
         </>
