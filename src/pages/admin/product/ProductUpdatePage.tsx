@@ -37,13 +37,13 @@ export const ProductUpdatePage = () => {
     if (session.user) {
       const { token } = session.user;
       const formData = new FormData();
-      formData.append("id", productId.toString());
-      formData.append("name", product.name);
-      formData.append("price", product.price.toString());
-      formData.append("stock", product.stock.toString());
-      formData.append("category", product.category);
-      formData.append("description", product.description);
-      formData.append("image", product.image);
+      formData.append("id", productId.toString() || "");
+      formData.append("name", product.name || "");
+      formData.append("price", product.price.toString() || "");
+      formData.append("stock", product.stock.toString() || "");
+      formData.append("category", product.category || "");
+      formData.append("description", product.description || "");
+      formData.append("image", product.image || new Blob());
       try {
         const res = await fetch("http://localhost:8080/product", {
           method: "PUT",
