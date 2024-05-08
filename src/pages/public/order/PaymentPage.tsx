@@ -20,11 +20,11 @@ type CreateOrder = {
 };
 
 const PaymentPage = () => {
-    const {session, clearCart} = useSession();
-    const navigate = useNavigate();
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [address, setAddress] = useState('');
+  const { session, clearCart } = useSession();
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const handleChangeName = (event: FormEvent<HTMLInputElement>) => {
     setName(event.currentTarget.value);
@@ -83,23 +83,20 @@ const PaymentPage = () => {
             body: JSON.stringify(order),
           });
 
-                    if (response.ok) {
-                        const json = await response.json();
-                        const id = json["id"];
-                        alert("상품 구매 완료했습니다.");
-                        clearCart();
-                        navigate(`/customer/order/${id}`);
-                    } else {
-                        const json = await response.json();
-                        alert(json.message)
-                    }
-                })();
-            } catch (err) {
-
-            }
-        } else {
-            navigate('/login');
-        }
+          if (response.ok) {
+            const json = await response.json();
+            const id = json["id"];
+            alert("상품 구매 완료했습니다.");
+            clearCart();
+            navigate(`/customer/order/${id}`);
+          } else {
+            const json = await response.json();
+            alert(json.message);
+          }
+        })();
+      } catch (err) {}
+    } else {
+      navigate("/login");
     }
   };
 
