@@ -25,32 +25,31 @@ export const ProductCreatePage = () => {
       alert("카테고리를 선택하세요.");
     }
     const description: string = descriptionInput.value;
-    const image: string = imageInput.value;
-
+    let image: File | null = null;
+    if (imageInput.files && imageInput.files[0]) {
+      image = imageInput.files[0];
+    }
     if (session.user) {
       const { token } = session.user;
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("price", price.toString());
+      formData.append("stock", stock.toString());
+      formData.append("category", category);
+      formData.append("description", description);
+      formData.append("image", image ?? new Blob());
       try {
         const res = await fetch("http://localhost:8080/product", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
             "AUTH-TOKEN": token,
           },
-          body: JSON.stringify({
-            name,
-            price,
-            stock,
-            category,
-            description,
-            image,
-          }),
+          body: formData,
         });
-
         if (!res.ok) {
           console.error("HTTP error:", res.status, res.statusText);
           return;
         }
-
         alert("생성되었습니다.");
         navigate("/admin/product");
       } catch (err) {
@@ -148,7 +147,7 @@ export const ProductCreatePage = () => {
             이미지
           </label>
           <input
-            type="text"
+            type="file"
             id="image"
             className="border p-2 rounded w-full"
             required
