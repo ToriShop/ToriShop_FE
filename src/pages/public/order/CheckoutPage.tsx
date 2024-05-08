@@ -52,7 +52,7 @@ export const CheckoutPage = () => {
       }
       const result = await res.json();
       const orderId = result.id;
-      navigate("/customer/order", { state: orderId });
+      navigate(`/customer/order/${orderId}`);
     } catch (err) {
       console.log(err);
     }
@@ -73,51 +73,70 @@ export const CheckoutPage = () => {
 
   return (
     <>
+      <h1 className="text-2xl font-bold mb-5">결제 화면</h1>
       <div>
-        {orders?.map((order) => (
-          <div key={order.product.id}>
-            <div
-              className="order-item"
-              style={{
-                width: "100px",
-                borderColor: "grey",
-                borderWidth: "1px",
-              }}
-            >
-              <div>{order.product.name}</div>
-              <div>{order.quantity}</div>
-              <div>{order.totalPrice}</div>
-            </div>
-          </div>
-        ))}
-        <span>총 결제액: {orderTotal}</span>
+        <div className={"inline-flex w-24 font-semibold text-lg"}>name</div>
+        <input
+          type="text"
+          id="name"
+          className={"w-1/2 p-1 m-2 border-gray-300 border-2 rounded"}
+        />
       </div>
-
       <div>
-        <label>이름</label>
-        <input type="text" id="name" required />
-        <br />
-        <label>핸드폰번호</label>
-        <input type="text" id="phone" required />
-        <br />
-        <label>주소</label>
-        <input type="text" id="address" required />
-        <br />
+        <div className={"inline-flex w-24 font-semibold text-lg"}>phone</div>
+        <input
+          type="text"
+          id="phone"
+          className={"w-1/2 p-1 m-2 border-gray-300 border-2 rounded"}
+        />
       </div>
-
       <div>
+        <div className={"inline-flex w-24 font-semibold text-lg"}>address</div>
+        <input
+          type="text"
+          id="address"
+          className={"w-1/2 p-1 m-2 border-gray-300 border-2 rounded"}
+        />
+      </div>
+      <div className="flex justify-between m-5 ">
+        <h2 className="text-xl font-semibold">상품 목록</h2>
         <button
-          type="submit"
-          style={{
-            borderColor: "grey",
-            borderWidth: "1px",
-            margin: "10px",
-          }}
+          className="bg-blue-500 text-white px-3 py-2 rounded"
           onClick={() => makeOrder(orders)}
         >
-          구매하기
+          결제하기
         </button>
       </div>
+
+      <ul id="order" className="p-5 space-y-5">
+        {orders?.map((order) => (
+          <li
+            key={order.product.id}
+            className="bg-gray-100 p-4 rounded-lg flex items-center justify-between shadow-sm"
+          >
+            <div className="flex items-center">
+              <img
+                src="https://via.placeholder.com/50"
+                alt="상품 이미지"
+                className="w-16 h-16 rounded-lg mr-4"
+              />
+              <div>
+                <h3 className="text-lg font-semibold">{order.product.name}</h3>
+                <div className="text-sm text-gray-500">
+                  {order.totalPrice / order.quantity}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span id="total-item-1" className="font-semibold">
+                {order.totalPrice}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <h5 className="text-2xl font-bold mb-5">총 가격: {orderTotal}</h5>
     </>
   );
 };
