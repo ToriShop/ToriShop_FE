@@ -36,6 +36,7 @@ type SessionContextProps = {
     plusQuantity: (id: number) => void
     minusQuantity: (id: number) => void
     isInOrder: (id: number, isInOrder: boolean) => void
+    clearCart: () => void
 }
 
 const DefaultSession: Session = {
@@ -60,6 +61,8 @@ const SessionContext = createContext<SessionContextProps>({
     minusQuantity: (id: number) => {
     },
     isInOrder: (id: number, isInOrder: boolean) => {
+    },
+    clearCart: () => {
     }
 });
 
@@ -86,7 +89,10 @@ type Action = {
     payload: number;
 } | {
     type: 'isInOrder';
-    payload: {id: number, isInOrder: boolean}
+    payload: { id: number, isInOrder: boolean }
+} | {
+    type: 'clearCart';
+    payload?: null;
 }
 
 const SKEY = 'session';
@@ -104,6 +110,10 @@ function getStorage() {
 
 const setStorage = (session: Session) => {
     localStorage.setItem(SKEY, JSON.stringify(session));
+}
+
+const clearStorage = () => {
+    localStorage.clear();
 }
 
 function reducer(state: Session, {type, payload}: Action) {
@@ -142,7 +152,7 @@ function reducer(state: Session, {type, payload}: Action) {
         }
         case "minusQuantity": {
             const updatedCart = cart.map((item) => {
-                if (item.productId  == payload) {
+                if (item.productId == payload) {
                     return {...item, quantity: Math.max(item.quantity - 1, 1)};
                 }
                 return item;
@@ -154,12 +164,17 @@ function reducer(state: Session, {type, payload}: Action) {
         case "isInOrder": {
             const {id, isInOrder} = payload;
             const updatedCart = cart.map((item) => {
-                if (item.productId  === id) {
+                if (item.productId === id) {
                     return {...item, isInOrder: isInOrder};
                 }
                 return item;
             });
             newSession = {...state, cart: updatedCart};
+            break
+        }
+        case "clearCart": {
+            clearStorage();
+            newSession = {...state, cart: []};
             break
         }
         default:
@@ -178,23 +193,18 @@ export const SessionProvider = ({children}: PropsWithChildren) => {
         if (session.user) {
             const token = session.user.token;
             (async function () {
-                try {
-                    const response = await fetch(`http://localhost:8080/cart`, {
-                        method: "get",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "AUTH-TOKEN": token
-                        }
-                    });
 
-                    if (response.ok) {
-                        const json = await response.json();
-                        setCart(json as Cart[]);
-                    } else {
-                        alert("장바구니 조회에 실패했습니다.");
+                const response = await fetch(`http://localhost:8080/cart`, {
+                    method: "get",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "AUTH-TOKEN": token
                     }
-                } catch (err) {
-                    alert("장바구니 조회에 실패했습니다.");
+                });
+
+                if (response.ok) {
+                    const json = await response.json();
+                    setCart(json as Cart[]);
                 }
             })();
         }
@@ -216,7 +226,7 @@ export const SessionProvider = ({children}: PropsWithChildren) => {
                                 "AUTH-TOKEN": token,
                             },
                             body: JSON.stringify({
-                                productId: item.productId ,
+                                productId: item.productId,
                                 isInOrder: item.isInOrder,
                                 quantity: item.quantity
                             })
@@ -256,6 +266,10 @@ export const SessionProvider = ({children}: PropsWithChildren) => {
         dispatch({type: 'minusQuantity', payload: id});
     }, []);
 
+    const clearCart = useCallback(() => {
+        dispatch({type: 'clearCart'});
+    }, []);
+
 
     const isInOrder = useCallback((id: number, isInOrder: boolean) => {
         dispatch({type: 'isInOrder', payload: {id, isInOrder}});
@@ -264,7 +278,7 @@ export const SessionProvider = ({children}: PropsWithChildren) => {
 
     return (
         <SessionContext.Provider
-            value={{session, login, signOut, setCart, saveItem, removeItem, plusQuantity, minusQuantity, isInOrder}}>
+            value={{session, login, signOut, setCart, saveItem, removeItem, plusQuantity, minusQuantity, isInOrder, clearCart}}>
             {children}
         </SessionContext.Provider>
     );
