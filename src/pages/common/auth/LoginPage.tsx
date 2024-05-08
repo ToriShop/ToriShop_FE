@@ -64,7 +64,7 @@ const Login = () => {
 
                         // 로그인 로직 구현
                         // userRole에 따라 어디로 리다이렉트할지 결정한다.
-                        json["userRole"] === "ADMIN" ? navigate('/admin/order') : navigate('/customer/product');
+                        json["userRole"] === "ADMIN" ? navigate('/admin/product') : navigate('/customer/product');
                     }
                 } catch (err) {
                     if (err instanceof Error) {

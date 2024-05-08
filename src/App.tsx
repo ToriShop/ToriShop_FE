@@ -26,14 +26,15 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="/" element={<Login/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/admin" element={<AdminHomePage/>}>
-                    <Route path="user" element={<UserManagementPage/>}/>
                     <Route path="product">
                         <Route index element={<ProductManagementPage/>}/>
                         <Route path=":id" element={<ProductUpdatePage/>}/>
                         <Route path="create" element={<ProductCreatePage/>}/>
                     </Route>
+                    <Route path="user" element={<UserManagementPage/>}/>
                     <Route path="order">
                         <Route index element={<OrderManagementPage/>}/>
                         <Route path=":id" element={<OrderUpdatePage/>}/>

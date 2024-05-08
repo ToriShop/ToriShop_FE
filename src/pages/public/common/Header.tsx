@@ -42,7 +42,7 @@ const Header = () => {
                                 <a className="text-white hover:text-gray-300" href="/customer/product">
                                     상품목록
                                 </a>
-                                <a className="text-white hover:text-gray-300" href="/customer/mypage">
+                                <a className="text-white hover:text-gray-300" href="/customer/order">
                                     마이페이지
                                 </a>
                             </>
