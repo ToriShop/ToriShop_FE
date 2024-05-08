@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProductType } from "../common/Type";
+import { GetProductType } from "../common/Type";
 import { useSession } from "../../../contexts/session-context";
 
 type Props = {
-  product?: ProductType;
+  product?: GetProductType;
 };
 
 const Product = ({ product }: Props) => {
   const navigate = useNavigate();
 
-  if (!product) return null;
+  if (!product) return null; // product가 없을 경우 렌더링하지 않음
 
-  const goToProductDetail = (product: ProductType) => {
+  const goToProductDetail = () => {
     navigate(`/customer/product/${product.id}`);
   };
 
   return (
     <div
-      onClick={() => goToProductDetail(product)}
+      onClick={() => goToProductDetail()}
       className="product-item cursor-pointer border border-gray-300 m-2 p-2 w-36 hover:shadow-lg"
     >
       <img
-        src={product.image}
+        src={product.image || ""}
         alt={product.name}
         className="w-full h-24 object-cover mb-2"
       />
@@ -33,7 +33,7 @@ const Product = ({ product }: Props) => {
 };
 
 export const ProductListPage = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const [products, setProducts] = useState<GetProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 

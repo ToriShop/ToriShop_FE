@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { OrderType, ProductType } from "../../public/common/Type";
+import { GetProductType, OrderType } from "../../public/common/Type";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSession } from "../../../contexts/session-context";
 
@@ -18,7 +18,7 @@ export const ProductDetailPage = () => {
     navigate("/customer/checkout", { state: orders });
   };
 
-  const [product, setProduct] = useState<ProductType | null>(null);
+  const [product, setProduct] = useState<GetProductType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
