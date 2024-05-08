@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {GetOrderItemType, OrderType, ProductType, GetProductType} from "../../public/common/Type";
+import {OrderType, GetProductType} from "../../public/common/Type";
 import {useNavigate, useParams} from "react-router-dom";
 import {Cart, useSession} from "../../../contexts/session-context";
 
@@ -35,7 +35,7 @@ export const ProductDetailPage = () => {
                           productId: product.id,
                           productName: product.name,
                           price: product.price,
-                          isInOrder: false,
+                          isInOrder: true,
                           quantity: quantity
                       } as Cart);
                       navigate("/customer/cart", {state: order});
@@ -61,7 +61,7 @@ export const ProductDetailPage = () => {
         navigate("/customer/checkout", {state: orders});
     };
 
-    const [product, setProduct] = useState<ProductType | null>(null);
+    const [product, setProduct] = useState<GetProductType | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
