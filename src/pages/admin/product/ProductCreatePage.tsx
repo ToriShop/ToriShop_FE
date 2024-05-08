@@ -32,12 +32,12 @@ export const ProductCreatePage = () => {
     if (session.user) {
       const { token } = session.user;
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("price", price.toString());
-      formData.append("stock", stock.toString());
-      formData.append("category", category);
-      formData.append("description", description);
-      formData.append("image", image ?? new Blob());
+      formData.append("name", name || "");
+      formData.append("price", price.toString() || "");
+      formData.append("stock", stock.toString() || "");
+      formData.append("category", category || "");
+      formData.append("description", description || "");
+      formData.append("image", image || new Blob());
       try {
         const res = await fetch("http://localhost:8080/product", {
           method: "POST",
