@@ -24,7 +24,6 @@ const OrderDetailPage = () => {
                     )
 
                     const json = await response.json();
-                    console.log(json)
                     setOrderItemList(json as GetOrderItemType[]);
 
                 } catch (err) {

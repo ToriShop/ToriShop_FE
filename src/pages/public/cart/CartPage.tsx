@@ -18,8 +18,7 @@ export const CartPage = () => {
             navigate("/customer/login");
         } else {
             setCartList(session.cart);
-            console.log(session.cart)
-            const price = cartList.filter(item => (item.isInOrder))
+            const price = session.cart.filter(item => (item.isInOrder))
                 .reduce((accumulator, object) => {
                     return accumulator + object.price * object.quantity;
                 }, 0);
@@ -28,6 +27,14 @@ export const CartPage = () => {
         }
     }, [navigate, session]);
 
+    const calculateTotalPrice = (cartList: Cart[]) => {
+        const price = cartList
+            .filter(item => item.isInOrder)
+            .reduce((accumulator, object) => {
+                return accumulator + object.price * object.quantity;
+            }, 0);
+        setTotalPrice(price);
+    };
     // 구매하기
     const purchaseItems = () => {
 
@@ -74,7 +81,9 @@ export const CartOne = ({cart: cart}: Props) => {
         <li id="item-1"
             key={cart.productId}
             className="bg-gray-100 p-4 rounded-lg flex items-center justify-between shadow-sm">
-            <input type="checkbox" className="cart-item" value="상품1"
+            <input type="checkbox"
+                   className="cart-item"
+                   checked={cart.isInOrder}
                    onChange={(e) => onChangeCheckedBox(e, cart.productId)}/>
             <div className="flex items-center">
                 <img src="https://via.placeholder.com/50" alt="상품 이미지"
