@@ -21,7 +21,7 @@ type CreateOrder = {
 }
 
 const PaymentPage = () => {
-    const {session} = useSession();
+    const {session, clearCart} = useSession();
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -88,6 +88,7 @@ const PaymentPage = () => {
                         const json = await response.json();
                         const id = json["id"];
                         alert("상품 구매 완료했습니다.");
+                        clearCart();
                         navigate(`/customer/order/${id}`);
                     } else {
                         const json = await response.json();
