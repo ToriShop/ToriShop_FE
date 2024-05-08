@@ -10,6 +10,18 @@ export const ProductUpdatePage = () => {
 
   const { session } = useSession();
 
+  let url;
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        image: file, // 로컬 URL 생성하여 미리보기용으로 사용
+      }));
+      url = URL.createObjectURL(file);
+    }
+  };
+
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
     field: string
@@ -24,22 +36,21 @@ export const ProductUpdatePage = () => {
   const updateProduct = async (productId: number) => {
     if (session.user) {
       const { token } = session.user;
+      const formData = new FormData();
+      formData.append("id", productId.toString());
+      formData.append("name", product.name);
+      formData.append("price", product.price.toString());
+      formData.append("stock", product.stock.toString());
+      formData.append("category", product.category);
+      formData.append("description", product.description);
+      formData.append("image", product.image);
       try {
         const res = await fetch("http://localhost:8080/product", {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
             "AUTH-TOKEN": token,
           },
-          body: JSON.stringify({
-            id: productId,
-            name: product.name,
-            price: product.price,
-            stock: product.stock,
-            category: product.category,
-            description: product.description,
-            image: product.image,
-          }),
+          body: formData,
         });
         if (!res.ok) {
           console.error("HTTP error:", res.status, res.statusText);
@@ -150,12 +161,16 @@ export const ProductUpdatePage = () => {
           <label className="block font-semibold mb-1" htmlFor="image">
             이미지
           </label>
+          <img
+            src={url}
+            alt={product.name}
+            className="h-16 w-16 object-cover rounded-lg"
+          />
           <input
-            type="text"
+            type="file"
             id="image"
             className="border p-2 rounded w-full"
-            value={product.image}
-            onChange={(e) => handleInputChange(e, "image")}
+            onChange={handleFileChange}
             required
           />
         </div>

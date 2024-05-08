@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {GetOrderItemType, OrderType, ProductType} from "../../public/common/Type";
+import {GetOrderItemType, OrderType, ProductType, GetProductType} from "../../public/common/Type";
 import {useNavigate, useParams} from "react-router-dom";
 import {Cart, useSession} from "../../../contexts/session-context";
 
@@ -7,51 +7,52 @@ export const ProductDetailPage = () => {
     const {id} = useParams();
     const navigate = useNavigate();
     const {session, saveItem} = useSession();
-
+  
     const goToCart = ({product, quantity, totalPrice}: OrderType) => {
-        const order: OrderType = {product, quantity, totalPrice};
+      const order: OrderType = {product, quantity, totalPrice};
 
-        if (session.user) {
-            let {token} = session.user;
-            (async function () {
-                try {
-                    const response = await fetch(
-                        `http://localhost:8080/cart`, {
-                            method: "post",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "AUTH-TOKEN": token
-                            },
-                            body: JSON.stringify({
-                                "productId": id,
-                                "isInOrder": false,
-                                "quantity": quantity
-                            })
-                        }
-                    )
+      if (session.user) {
+          let {token} = session.user;
+          (async function () {
+              try {
+                  const response = await fetch(
+                      `http://localhost:8080/cart`, {
+                          method: "post",
+                          headers: {
+                              "Content-Type": "application/json",
+                              "AUTH-TOKEN": token
+                          },
+                          body: JSON.stringify({
+                              "productId": id,
+                              "isInOrder": false,
+                              "quantity": quantity
+                          })
+                      }
+                  )
 
-                    if (response.ok) {
-                        saveItem({
-                            productId: product.id,
-                            productName: product.name,
-                            price: product.price,
-                            isInOrder: false,
-                            quantity: quantity
-                        } as Cart);
-                        navigate("/customer/cart", {state: order});
-                    } else {
-                        alert("장바구니 담기 실패했습니다.")
-                        return;
-                    }
+                  if (response.ok) {
+                      saveItem({
+                          productId: product.id,
+                          productName: product.name,
+                          price: product.price,
+                          isInOrder: false,
+                          quantity: quantity
+                      } as Cart);
+                      navigate("/customer/cart", {state: order});
+                  } else {
+                      alert("장바구니 담기 실패했습니다.")
+                      return;
+                  }
 
-                } catch (err) {
-                    alert("장바구니 담기 실패했습니다.")
-                    return;
-                }
-            })();
-        } else {
-            navigate("/login");
-        }
+              } catch (err) {
+                  alert("장바구니 담기 실패했습니다.")
+                  return;
+              }
+          })();
+      } else {
+          navigate("/login");
+      }
+
     }
 
     const goToCheckout = ({product, quantity, totalPrice}: OrderType) => {
