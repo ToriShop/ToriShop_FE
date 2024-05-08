@@ -128,7 +128,8 @@ function reducer(state: Session, {type, payload}: Action) {
             newSession = {...state, user: payload};
             break
         case "signOut":
-            newSession = {...state, user: null};
+            newSession = {...state, user: null, cart: []};
+            clearStorage();
             break
         case "removeItem": {
             const newCart = state.cart.filter((item) => (item.productId != payload))
@@ -212,38 +213,6 @@ export const SessionProvider = ({children}: PropsWithChildren) => {
 
     const signOut = useCallback(() => {
         dispatch({type: 'signOut'});
-        if (session.user) {
-            let {token} = session.user;
-            let cart = session.cart;
-
-            cart.map((item) => {
-                (async function () {
-                    try {
-                        const response = await fetch(`http://localhost:8080/cart`, {
-                            method: "put",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "AUTH-TOKEN": token,
-                            },
-                            body: JSON.stringify({
-                                productId: item.productId,
-                                isInOrder: item.isInOrder,
-                                quantity: item.quantity
-                            })
-                        });
-
-                        if (response.ok) {
-                            localStorage.clear();
-                            return;
-                        } else {
-                            alert("장바구니 조회에 실패했습니다.");
-                        }
-                    } catch (err) {
-                        alert("장바구니 조회에 실패했습니다.");
-                    }
-                })();
-            });
-        }
     }, []);
 
     const setCart = useCallback((cart: Cart[]) => {

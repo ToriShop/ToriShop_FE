@@ -47,12 +47,16 @@ export const CheckoutPage = () => {
         }),
       });
       if (!res.ok) {
-        console.error("HTTP error:", res.status, res.statusText);
-        return;
+        const json = await res.json();
+        alert(json.message)
       }
       const result = await res.json();
       const orderId = result.id;
-      navigate(`/customer/order/${orderId}`);
+      navigate(`/customer/order/${orderId}`, {
+        state: {
+          orderNumber: result.orderNumber
+        }
+      });
     } catch (err) {
       console.log(err);
     }
