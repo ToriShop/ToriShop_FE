@@ -1,12 +1,12 @@
 import {useLocation, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useSession} from "../../../contexts/session-context";
-import {OrderItemType} from "../common/Type";
+import {GetOrderItemType} from "../../public/common/Type";
 
 const OrderDetailPage = () => {
     const {id} = useParams<{ id: string }>();
     const {session} = useSession();
-    const [orderItemList, setOrderItemList] = useState<OrderItemType[]>([]);
+    const [orderItemList, setOrderItemList] = useState<GetOrderItemType[]>([]);
 
     useEffect(() => {
         if (session.user) {
@@ -24,7 +24,7 @@ const OrderDetailPage = () => {
                     )
 
                     const json = await response.json();
-                    setOrderItemList(json as OrderItemType[]);
+                    setOrderItemList(json as GetOrderItemType[]);
 
                 } catch (err) {
                     alert("주문 상세 조회에 실패했습니다.")
@@ -36,7 +36,7 @@ const OrderDetailPage = () => {
     return (
         <>
             {
-                orderItemList.length ?
+                orderItemList.length === 0 ?
                     <div>주문 목록이 비었습니다.</div> :
                     <div className="container mx-auto p-6">
                         <div className="overflow-x-auto">
