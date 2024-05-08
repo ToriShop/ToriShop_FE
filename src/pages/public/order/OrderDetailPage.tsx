@@ -6,7 +6,9 @@ import {GetOrderItemType} from "../../public/common/Type";
 const OrderDetailPage = () => {
     const {id} = useParams<{ id: string }>();
     const {session} = useSession();
+    const location = useLocation();
     const [orderItemList, setOrderItemList] = useState<GetOrderItemType[]>([]);
+    const {orderNumber} = location.state || [];
 
     useEffect(() => {
         if (session.user) {
@@ -39,6 +41,8 @@ const OrderDetailPage = () => {
                 orderItemList.length === 0 ?
                     <div>주문 목록이 비었습니다.</div> :
                     <div className="container mx-auto p-6">
+                        <h1 className="text-2xl font-bold mb-5">주문 상세 화면</h1>
+                        <h5 className="text-xl font-bold mb-5">OrderNumber: {orderNumber}</h5>
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
                                 <thead className="bg-gray-800 text-white">
